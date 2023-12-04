@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static%}
+{%block title%}
+Home
+{%endblock title%}
+
+{%block css%}
+    <link rel="stylesheet" href="{% static 'customer/customer_home_style.css'%}">
+{%endblock css%}
+
+{%block content%}
+{%if user_info%}
+    <header>
+        <div class="header-wrapper container">
+            <div>
+                <h1>SHEMS</h1>
+            </div>
+            <ul class="header-items">
+                <li>Home</li>
+                <li>{{ user_info.0 }} {{ user_info.1 }}</li>
+                <li><a href="{% url 'logout' %}" class="logout-link">Logout</a></li>
+            </ul>
+        </div>
+    </header>
+    <main>
+        <h1>Welcome, {{ user_info.0 }}!</h1>
+    </main>
+   
+{% else %}
+        <p>No user information available.</p>
+{%endif%}
+{%endblock content%}

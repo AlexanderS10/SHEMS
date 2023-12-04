@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+asgiref = "==3.4.1"
+autopep8 = "==1.5.7"
+beautifulsoup4 = "==4.9.3"
+certifi = "==2021.5.30"
+cffi = "==1.14.6"
+charset-normalizer = "==2.0.4"
+cryptography = "==3.4.8"
+defusedxml = "==0.7.1"
+django = "*"
+django-allauth = "==0.45.0"
+django-cors-headers = "==3.8.0"
+django-phonenumber-field = "==5.2.0"
+djangorestframework = "==3.12.4"
+mysqlclient = "==2.0.3"
+oauthlib = "==3.1.1"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"

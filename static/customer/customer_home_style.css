@@ -1,0 +1,34 @@
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    align-items: center;
+}
+.header-wrapper{
+    display: flex;
+    justify-content: space-between;
+}
+/* Style for the logo */
+.logo {
+    max-width: 100px; /* Adjust size as needed */
+    height: auto;
+}
+
+/* Style for the list on the right */
+.header-items {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.header-items li {
+    margin-right: 20px; /* Adjust spacing as needed */
+}
+
+/* Style for the logout link */
+.logout-link {
+    color: #fff;
+    text-decoration: none;
+}
