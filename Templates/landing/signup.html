@@ -1,1 +1,36 @@
 {% extends 'base.html' %}
+{% load static%}
+{%block title%}
+Email Sent
+{%endblock title%}
+
+{%block css%}
+    <link rel="stylesheet" href="{% static 'landing/registration_styles.css'%}">
+{%endblock css%}
+
+{%block content%}
+<div class="bg">
+<div class="form-container">
+    <h1 style="text-align: center;">User Registration</h1>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}
+                    <div class="error-message">
+                        {{ field.errors }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        <button type="submit">Register</button>
+    </form>
+    
+    {% for message in messages %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+    {% endfor %}
+</div>
+</div>
+{%endblock content%}

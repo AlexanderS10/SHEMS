@@ -22,15 +22,22 @@ Login
         <input type="password" name="password" placeholder="Password" required>
         <button class="btn btn-primary" type="submit">Login</button>
     </form>
+    {% for message in messages %}
+    {% if message.tags == 'success' %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% elif message.tags == 'error' %}
+            <div class="alert alert-danger">
+                {{ message }}
+            </div>
+        {% endif %}
+    {% endfor %}
+
     <div class="create-forgot">
         <a href="{%url 'signup'%}">Create new account</a>
         <a href="{%url 'password_reset'%}">Forgot password?</a>
     </div>
-    {% for message in messages %}
-        <div class="alert alert-success">
-            {{ message }}
-        </div>
-    {% endfor %}
     </div>
 </div>
 {%endblock content%}
