@@ -18,9 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from landing.views import landing_view, custom_login, logout_view, RegisterView
 from accounts.views import customer_home_view
-from django.contrib.auth.views import LoginView
 from django.contrib.auth import views as auth_views
-from django.urls import path, include
+from django.urls import path
 
 
 urlpatterns = [

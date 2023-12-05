@@ -68,3 +68,9 @@ label{
     text-align: start;
     color:red;
 }
+
+.bg{
+    width: 100% !important;
+    display: flex;
+    justify-content: center;
+}

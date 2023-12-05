@@ -29,6 +29,7 @@ class Customer(AbstractBaseUser):
     billing_city = models.CharField(max_length=30, null=False, blank=False)
     billing_state = models.CharField(max_length=2, null=False, blank=False)
     billing_zipcode = models.CharField(max_length=5, null=False, blank=False)
+    is_active = models.BooleanField(default=True)
     # Any other fields or methods you want to include...
 
     USERNAME_FIELD = 'email'
