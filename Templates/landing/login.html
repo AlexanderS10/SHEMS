@@ -23,9 +23,14 @@ Login
         <button class="btn btn-primary" type="submit">Login</button>
     </form>
     <div class="create-forgot">
-        <a href="">Create new account</a>
+        <a href="{%url 'signup'%}">Create new account</a>
         <a href="{%url 'password_reset'%}">Forgot password?</a>
     </div>
+    {% for message in messages %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endfor %}
     </div>
 </div>
 {%endblock content%}

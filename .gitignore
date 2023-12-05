@@ -2,3 +2,4 @@ SHEMS/.env
 .env
 SHEMS/SHEMS/.env
 env
+sent_emails

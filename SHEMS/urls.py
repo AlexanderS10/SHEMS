@@ -16,21 +16,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from landing.views import landing_view, custom_login, logout_view, ResetPasswordView
+from landing.views import landing_view, custom_login, logout_view, RegisterView
 from accounts.views import customer_home_view
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import views as auth_views
+from django.urls import path, include
 
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
     path("", landing_view, name="Landing"),
-    path("login/", custom_login, name="Login"),
+    path("admin/", admin.site.urls),
+    path("login/", custom_login, name="login"),
     path('logout/', logout_view, name='logout'),
     path("home/", customer_home_view, name="customer_home"),
-    path('password-reset/', ResetPasswordView.as_view(), name='password_reset'),
-    path('password-reset-confirm/<uidb64>/<token>/',
-         auth_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'),
-         name='password_reset_confirm'),
-    path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
+    path("password-reset/", auth_views.PasswordResetView.as_view( template_name="registration/password_reset.html"), name="password_reset"),
+    path("password-reset/done/", auth_views.PasswordResetDoneView.as_view( template_name="registration/password_reset_sent.html"), name="password_reset_done"),
+    path("password-reset-confirm/<uidb64>/<token>", auth_views.PasswordResetConfirmView.as_view( template_name="registration/password_reset_confirm.html"), name="password_reset_confirm"),
+    path("password-reset-complete/", auth_views.PasswordResetCompleteView.as_view( template_name="registration/password_reset_done.html"), name="password_reset_complete"),
+    path("signup/",RegisterView.as_view(), name='signup')
 ]
+
