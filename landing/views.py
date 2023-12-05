@@ -4,7 +4,7 @@ from django.views import View
 from django.db import connection
 from django.shortcuts import redirect
 from .forms import RegistrationForm 
-from accounts.models import Customer
+from accounts.models import Customers
 from django.contrib import messages
 # Create your views here.
 def landing_view(request):
@@ -21,7 +21,7 @@ def custom_login(request):#Find where I can send an error message when the email
         if user is not None:
             user_info = None
             with connection.cursor() as cursor:
-                cursor.execute("SELECT first_name, last_name  FROM accounts_customer WHERE email=%s",[email])
+                cursor.execute("SELECT first_name, last_name  FROM accounts_customers WHERE email=%s",[email])
                 user_info = cursor.fetchone()
             request.session['user_info'] = user_info
             login(request, user)
@@ -61,7 +61,7 @@ class RegisterView(View):
             billing_city = form.cleaned_data['billing_city']
             billing_state = form.cleaned_data['billing_state']
             billing_zipcode = form.cleaned_data['billing_zipcode']
-            Customer.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name, billing_unit_number=billing_unit_number, billing_street_number=billing_street_number, billing_street_name=billing_street_name, billing_city=billing_city, billing_state=billing_state, billing_zipcode=billing_zipcode) # type: ignore
+            Customers.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name, billing_unit_number=billing_unit_number, billing_street_number=billing_street_number, billing_street_name=billing_street_name, billing_city=billing_city, billing_state=billing_state, billing_zipcode=billing_zipcode) # type: ignore
             messages.success(request, "You have successfully registered! Please log in.")  
             return redirect('login')  # Redirect to login page after successful registration
         return render(request, 'landing/signup.html', {'form': form})

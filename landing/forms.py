@@ -1,10 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from accounts.models import Customer
+from accounts.models import Customers
 
 class RegistrationForm(UserCreationForm):
     class Meta:
-        model = Customer
+        model = Customers
         fields = ('email', 'password1', 'password2', 'first_name', 'last_name', 'billing_unit_number', 'billing_street_number', 'billing_street_name', 'billing_city', 'billing_state', 'billing_zipcode')
         widgets = {
             'email': forms.EmailInput(attrs={'class': 'form-control'}),

@@ -32,3 +32,18 @@ header {
     color: #fff;
     text-decoration: none;
 }
+
+.main-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    list-style-type: none;
+    padding: 0;
+}
+
+.main-menu li {
+    margin: 20px 0;
+    font-size: 2em;
+}

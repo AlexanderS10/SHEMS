@@ -10,22 +10,15 @@ Home
 
 {%block content%}
 {%if user_info%}
-    <header>
-        <div class="header-wrapper container">
-            <div>
-                <h1>SHEMS</h1>
-            </div>
-            <ul class="header-items">
-                <li>Home</li>
-                <li>{{ user_info.0 }} {{ user_info.1 }}</li>
-                <li><a href="{% url 'logout' %}" class="logout-link">Logout</a></li>
-            </ul>
-        </div>
-    </header>
+    {% include  'customer/header.html'%}
     <main>
-        <h1>Welcome, {{ user_info.0 }}!</h1>
+        <ul class="main-menu">
+            <li><a href="">Register a location</a></li>
+            <li><a href="">Register a device</a></li>
+            <li><a href="">See current consumption</a></li>
+        </ul>
     </main>
-   
+
 {% else %}
         <p>No user information available.</p>
 {%endif%}
