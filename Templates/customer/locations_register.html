@@ -1,0 +1,17 @@
+<section class="register-location-section">
+    {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    <div class="form-container">
+        <h2>Add Service Location</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Add Location</button>
+        </form>
+    </div>
+</section>

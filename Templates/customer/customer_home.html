@@ -13,12 +13,11 @@ Home
     {% include  'customer/header.html'%}
     <main>
         <ul class="main-menu">
-            <li><a href="">Register a location</a></li>
+            <li><a href="{%url 'service_locations'%}">Service Locations</a></li>
             <li><a href="">Register a device</a></li>
             <li><a href="">See current consumption</a></li>
         </ul>
     </main>
-
 {% else %}
         <p>No user information available.</p>
 {%endif%}

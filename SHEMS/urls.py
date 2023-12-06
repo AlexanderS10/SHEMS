@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from landing.views import landing_view, custom_login, logout_view, RegisterView
-from accounts.views import customer_home_view
+from accounts.views import *
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
@@ -32,6 +32,8 @@ urlpatterns = [
     path("password-reset/done/", auth_views.PasswordResetDoneView.as_view( template_name="registration/password_reset_sent.html"), name="password_reset_done"),
     path("password-reset-confirm/<uidb64>/<token>", auth_views.PasswordResetConfirmView.as_view( template_name="registration/password_reset_confirm.html"), name="password_reset_confirm"),
     path("password-reset-complete/", auth_views.PasswordResetCompleteView.as_view( template_name="registration/password_reset_done.html"), name="password_reset_complete"),
-    path("signup/",RegisterView.as_view(), name='signup')
+    path("signup/",RegisterView.as_view(), name='signup'),
+    path('service-locations/',service_locations, name='service_locations'),
+    path('delete_location/<int:location_id>/', delete_location, name='delete_location'),
 ]
 

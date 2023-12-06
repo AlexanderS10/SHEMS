@@ -1,0 +1,17 @@
+<section class="locations-list-section">
+    <div class="locations-list-wrapper container">
+        <div>
+            <h1>Your Service Locations</h1>
+        </div>
+        <ul class="locations-list">
+            {% for location in service_locations %}
+                <li>
+                    {{ location.streetName }}, {{ location.sstate }} {{ location.zipcode }}
+                    <a href="{% url 'delete_location' location.id %}" class="delete-location" onclick=confirmDelete()>Delete</a>                    
+                </li>
+            {% empty %}
+                <li>No service locations available.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>

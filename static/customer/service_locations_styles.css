@@ -1,0 +1,67 @@
+.centered-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.form-container {
+    width: 400px;
+    /* Set width as needed */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    margin-top: 10px;
+}
+
+.messages {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #dff0d8;
+    border: 1px solid #3c763d;
+    color: #3c763d;
+    border-radius: 5px;
+    width: 400px;
+    text-align: center;
+}
+
+.register-location-section {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.locations-list-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.locations-list {
+    font-size: x-large;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    list-style: none;
+}
+
+.locations-list li:nth-child(even) {
+    background-color: #545b6240;
+    /* Change this to your desired background color */
+}
+
+.locations-list li:nth-child(odd) {
+    background-color: #fff;
+    /* Change this to your desired background color */
+}
+ 
+.locations-list li{
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
