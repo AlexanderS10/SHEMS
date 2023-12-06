@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static%}
+{%block title%}
+Service Locations
+{%endblock title%}
+
+{%block css%}
+    <link rel="stylesheet" href="{% static 'customer/devices_manager_styles.css'%}">
+    <link rel="stylesheet" href="{% static 'customer/customer_home_style.css'%}">
+{%endblock css%}
+{%block content%}
+    {% include  'customer/header.html'%}
+    <main>
+        <div class="centered-list">
+            <div class="list-container">
+                <h1>List of Service Locations</h1>
+                <ul class="locations-list">
+                    {% for location in service_locations %}
+                    <a href="{% url 'devices_list' location.0 %}">
+                        <li class="{% cycle 'even' 'odd' %}">
+                            {{ location.2 }}, {{ location.3 }}, {{ location.4 }} {{ location.5 }}
+                        </li>
+                    </a>
+                    {% empty %}
+                        <li>No service locations available.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </main>
+{%endblock content%}

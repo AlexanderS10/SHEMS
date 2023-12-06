@@ -55,7 +55,7 @@
 }
 
 .locations-list li:nth-child(odd) {
-    background-color: #fff;
+    background-color: #dee2e65e;
     /* Change this to your desired background color */
 }
  
@@ -64,4 +64,27 @@
     padding: 0;
     margin: 0;
     text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.centered-list {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Adjust the height as needed */
+}
+.list-container {
+    width: 50%; /* Adjust the width of the list container */
+}
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+li {
+    margin-bottom: 10px; /* Adjust spacing between list items */
+}
+a {
+    text-decoration: none;
+    color: #000; /* Adjust link color */
 }

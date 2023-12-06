@@ -60,21 +60,24 @@ class ServiceLocations(models.Model):
             models.CheckConstraint(check=models.Q(noBedrooms__gte=0), name='noBedrooms'),
         ]
 
-class Models(models.Model):
-    modelNumber = models.SmallIntegerField(primary_key=True)
-    model_property = models.CharField(max_length=30)
+class DeviceType(models.Model):
+    name = models.CharField(max_length=50)
+    def __str__(self):
+        return self.name
 
-    class Meta:
-        constraints = [
-            models.CheckConstraint(check=models.Q(modelNumber__isnull=False), name='non_null_modelNumber'),
-        ]
+class DeviceModel(models.Model):
+    modelNumber = models.SmallIntegerField(primary_key=True)
+    device_type = models.ForeignKey(DeviceType, on_delete=models.CASCADE)
+    model_property = models.CharField(max_length=30)
+    def __str__(self):
+        return self.modelNumber
 
 class Devices(models.Model):
     deviceID = models.AutoField(primary_key=True)
-    locationID = models.ForeignKey('ServiceLocations', on_delete=models.CASCADE)
+    location = models.ForeignKey('ServiceLocations', on_delete=models.CASCADE)
     device_name = models.CharField(max_length=30)
-    modelNumber = models.ForeignKey('Models', on_delete=models.CASCADE)
-
+    device_type = models.ForeignKey(DeviceType, on_delete=models.CASCADE)
+    modelNumber = models.ForeignKey(DeviceModel, on_delete=models.CASCADE)
     class Meta:
         constraints = [
             models.CheckConstraint(check=models.Q(deviceID__isnull=False), name='non_null_deviceID'),

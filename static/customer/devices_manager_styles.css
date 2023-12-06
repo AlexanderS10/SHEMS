@@ -1,0 +1,51 @@
+.centered-list {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+.list-container {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+li {
+    margin-bottom: 10px; /* Adjust spacing between list items */
+}
+.locations-list a {
+    text-decoration: none;
+    color: #000; /* Adjust link color */
+}
+.locations-list {
+    font-size: x-large;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    list-style: none;
+}
+li.even {
+    background-color: #545b6240;
+    /* Change this to your desired background color */
+}
+
+li.odd {
+    background-color: #dee2e65e;
+    /* Change this to your desired background color */
+}
+.locations-list a{
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+    font-size: x-large;
+}
+li:hover {
+    background-color: #0000008c;
+    cursor: pointer;
+    color: white;
+}

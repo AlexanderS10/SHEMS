@@ -1,5 +1,5 @@
 from django import forms
-from .models import ServiceLocations
+from .models import ServiceLocations, Devices
 class ServiceLocationForm(forms.ModelForm):
     class Meta:
         model = ServiceLocations
@@ -16,4 +16,15 @@ class ServiceLocationForm(forms.ModelForm):
             'squareFootage': forms.NumberInput(attrs={'class': 'form-control'}),
             'noBedrooms': forms.NumberInput(attrs={'class': 'form-control'}),
             'noOccupants': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
+class DeviceCreationForm(forms.ModelForm):
+    class Meta:
+        model = Devices
+        exclude = ['deviceID', 'location']  # Exclude the 'deviceID' field
+        widgets = {
+            'location': forms.Select(attrs={'class': 'form-control'}),
+            'device_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'device_type': forms.Select(attrs={'class': 'form-control'}),
+            'modelNumber': forms.Select(attrs={'class': 'form-control'}),
         }

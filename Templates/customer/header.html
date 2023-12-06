@@ -4,8 +4,8 @@
             <h1>SHEMS</h1>
         </div>
         <ul class="header-items">
-            <li>Home</li>
-            <li>{{ user_info.0 }} {{ user_info.1 }}</li>
+            <li><a href="{% url 'customer_home' %}">Home</a></li>
+            <li><a href="{% url 'change_password'%}">{{ user_info.0 }} {{ user_info.1 }}</a></li>
             <li><a href="{% url 'logout' %}" class="logout-link">Logout</a></li>
         </ul>
     </div>
