@@ -21,9 +21,8 @@ class ServiceLocationForm(forms.ModelForm):
 class DeviceCreationForm(forms.ModelForm):
     class Meta:
         model = Devices
-        exclude = ['deviceID', 'location']  # Exclude the 'deviceID' field
+        exclude = ['deviceID', 'location']  
         widgets = {
-            'location': forms.Select(attrs={'class': 'form-control'}),
             'device_name': forms.TextInput(attrs={'class': 'form-control'}),
             'device_type': forms.Select(attrs={'class': 'form-control'}),
             'modelNumber': forms.Select(attrs={'class': 'form-control'}),

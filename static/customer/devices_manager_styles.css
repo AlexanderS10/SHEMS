@@ -1,7 +1,8 @@
 .centered-list {
     display: flex;
-    justify-content: center;
-    margin-top: 10px;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
 }
 .list-container {
     width: 50%;
@@ -48,4 +49,33 @@ li:hover {
     background-color: #0000008c;
     cursor: pointer;
     color: white;
+}
+
+.button-container{
+    margin-top: 10px;
+}
+
+.device-list li:hover{
+    background-color: white;
+    cursor: default;
+    color: black;
+}
+
+.device-list li:nth-child(even) {
+    background-color: #f2f2f2; /* Change to your preferred even color */
+}
+
+/* Item styling within list items */
+.device-list li {
+    /* Add styles for list items here */
+    padding: 10px;
+    border-bottom: 1px solid #ddd; /* Example border between items */
+}
+.device-list li {
+    display: flex;
+    justify-content: space-between; /* Adjust alignment as needed */
+    align-items: center;
+}
+.device-list li div {
+    margin-right: 5px;
 }

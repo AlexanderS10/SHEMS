@@ -14,23 +14,36 @@ Device List
         <div class="centered-list">
             <div class="list-container">
                 <h1>List of Devices</h1>
-                <ul>
+                <ul class="messages">
+                    {% for message in messages %}
+                        {% if message.tags %}
+                            {% if message.tags == 'error' %}
+                                <li class="alert alert-danger">{{ message }}</li>
+                            {% elif message.tags == 'success' %}
+                                <li class="alert alert-success">{{ message }}</li>
+                            {% endif %}
+                        {% else %}
+                            <li>{{ message }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+                <ul class="device-list">
                     {% for device in devices %}
                         <li>
-                            {{ device.1 }}, {{ device.3 }}, {{ device.3 }} {{ device.4 }}
-                            <a href="{% url 'delete_device' device.0 %}" class="btn btn-primary">Delete</a>
+                            <div>{{ device.1 }}, {{ device.2 }}, {{ device.3 }}</div>
+                            <a href="{% url 'delete_device' device.0 %}" class="btn btn-danger" onclick="return confirmDelete()">Delete</a>
                         </li>
                     {% empty %}
                         <li>No devices available.</li>
                     {% endfor %}
                 </ul>
             </div>
+            <div class="button-container">
+                <a href="{% url 'pair_device' location_id=location_id %}"><button class="btn btn-primary">Pair a new device</button></a>
+            </div>
         </div>
-        <h2>Add Device</h2>
-            <form method="post" class="device-creation-form">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Add Device</button>
-            </form>
     </main>
 {%endblock content%}
+{% block jsfiles%}
+<script src="{% static 'customer/pair_device.js'%}"></script>
+{% endblock jsfiles%}

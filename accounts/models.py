@@ -66,7 +66,7 @@ class DeviceType(models.Model):
         return self.name
 
 class DeviceModel(models.Model):
-    modelNumber = models.SmallIntegerField(primary_key=True)
+    modelNumber = models.CharField(max_length=30)
     device_type = models.ForeignKey(DeviceType, on_delete=models.CASCADE)
     model_property = models.CharField(max_length=30)
     def __str__(self):
@@ -82,6 +82,8 @@ class Devices(models.Model):
         constraints = [
             models.CheckConstraint(check=models.Q(deviceID__isnull=False), name='non_null_deviceID'),
         ]
+    def __str__(self):
+        return self.device_name
     
 class Events(models.Model):
     eventID = models.AutoField(primary_key=True)

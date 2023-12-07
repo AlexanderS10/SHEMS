@@ -4,7 +4,7 @@ from django.dispatch import receiver
 from django.shortcuts import redirect
 from django.contrib import messages
 from .forms import ServiceLocationForm, DeviceCreationForm
-from accounts.models import ServiceLocations, Devices
+from accounts.models import ServiceLocations, Devices, DeviceType, DeviceModel
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
@@ -85,20 +85,36 @@ def manage_devices(request):#This is where we fetch the list of service location
     return render(request, 'customer/devices_manager/locations_list.html', {'service_locations': service_locations})
 
 def devices_list(request, location_id):
+    query = """
+    SELECT d."deviceID", d.device_name, dt.name, dm."modelNumber"
+    FROM accounts_devices AS d
+    JOIN accounts_devicetype AS dt ON d.device_type_id = dt.id
+    JOIN accounts_devicemodel AS dm ON d."modelNumber_id"=dm.id
+    WHERE d.location_id = %s
+    """
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM accounts_devices WHERE location_id = %s", [location_id])
-        devices = cursor.fetchall()  # Fetch all devices associated with the location
-    form = DeviceCreationForm()
+        cursor.execute(query, [location_id])
+        devices = cursor.fetchall()  
+    return render(request, 'customer/devices_manager/devices_list.html', {'devices': devices, 'location_id': location_id})
+
+def delete_device(request, device_id):
+    device = Devices.objects.get(deviceID=device_id)    
+    location_id = device.location_id # type: ignore
+    with connection.cursor() as cursor:
+        cursor.execute('DELETE FROM accounts_devices WHERE "deviceID" = %s', [device_id])
+    messages.success(request, 'Device deleted successfully!')
+    return redirect('devices_list', location_id=location_id)
+
+def pair_device(request, location_id):
+    device_types = DeviceType.objects.all()
+    device_models = DeviceModel.objects.all()
     if request.method == 'POST':
-        form = DeviceCreationForm(request.POST)
+        form_data = request.POST.copy()
+        form = DeviceCreationForm(form_data)
         if form.is_valid():
-            # Save form data into variables
-            location_id = location_id
             device_name = form.cleaned_data['device_name']
             device_type_id = form.cleaned_data['device_type'].id
             model_number_id = form.cleaned_data['modelNumber'].id
-            
-            # Insert data using raw SQL
             with connection.cursor() as cursor:
                 cursor.execute(
                     '''
@@ -107,13 +123,18 @@ def devices_list(request, location_id):
                     ''',
                     [location_id, device_name, device_type_id, model_number_id]
                 )
-            return redirect('devices_list')
-    return render(request, 'customer/devices_manager/devices_list.html', {'devices': devices, 'form': form})
+            messages.success(request, 'Device paired successfully!')
+            return redirect('pair_device', location_id=location_id)
+        else:
+            error_message = "Please correct the errors below."
+            messages.error(request, error_message)
+        
+    else:
+        print ("This doesn't work")
+        form = DeviceCreationForm()
 
-def delete_device(request, device_id):
-    device = Devices.objects.get(deviceID=device_id)    
-    location_id = device.location_id # type: ignore
-    with connection.cursor() as cursor:
-        cursor.execute("DELETE FROM accounts_devices WHERE deviceID = %s", [device_id])
-    messages.success(request, 'Device deleted successfully!')
-    return redirect('devices_list', location_id=location_id)
+    context = {
+        'device_types': device_types,
+        'device_models': device_models,
+    }
+    return render(request, 'customer/devices_manager/pair_device.html', context)

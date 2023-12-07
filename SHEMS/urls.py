@@ -39,5 +39,6 @@ urlpatterns = [
     path('manage_devices/', manage_devices, name='manage_devices'),
     path('devices/<int:location_id>/', devices_list, name='devices_list'),
     path('devices/delete/<int:device_id>/', delete_device, name='delete_device'),
+    path('devices/pair_device/<int:location_id>/', pair_device, name='pair_device'),
 ]
 

@@ -25,6 +25,9 @@
     width: 400px;
     text-align: center;
 }
+section.locations-list-section{
+    margin-top: 10px;
+}
 
 .register-location-section {
     display: flex;
@@ -68,6 +71,21 @@
     padding-bottom: 10px;
 }
 
+/* Item styling within list items */
+.locations-list li {
+    /* Add styles for list items here */
+    padding: 10px;
+    border-bottom: 1px solid #ddd; /* Example border between items */
+}
+.locations-list li {
+    display: flex;
+    justify-content: space-between; /* Adjust alignment as needed */
+    align-items: center;
+}
+.locations-list li div {
+    margin-right: 5px;
+}
+
 .centered-list {
     display: flex;
     justify-content: center;
@@ -84,7 +102,10 @@ ul {
 li {
     margin-bottom: 10px; /* Adjust spacing between list items */
 }
-a {
+.locations-list li a {
     text-decoration: none;
     color: #000; /* Adjust link color */
+}
+a.btn.btn-danger.delete-location{
+    color: white;
 }
