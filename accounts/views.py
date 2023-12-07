@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.db import connection
-from django.dispatch import receiver
+from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.contrib import messages
 from .forms import ServiceLocationForm, DeviceCreationForm
@@ -56,7 +56,8 @@ def service_locations(request):
             return redirect('service_locations')
     else:
         form = ServiceLocationForm()
-    service_locations = ServiceLocations.objects.all()
+    
+    service_locations = ServiceLocations.objects.filter(customer=request.user.id)
     
     return render(request, 'customer/service_locations.html', {
         'service_locations': service_locations,
@@ -65,16 +66,19 @@ def service_locations(request):
 
 @login_required
 def delete_location(request, location_id):
-    # Perform deletion using raw SQL query
-    with connection.cursor() as cursor:
-        cursor.execute(
-            '''
-            DELETE FROM accounts_servicelocations
-            WHERE id = %s
-            ''',
-            [location_id]
-        )
-    messages.success(request, 'Location deleted successfully!')
+    location = get_object_or_404(ServiceLocations, id=location_id) # make sure that the location exists
+    if request.user == location.customer: # make sure that the user is the owner of the location
+        with connection.cursor() as cursor:
+            cursor.execute(
+                '''
+                DELETE FROM accounts_servicelocations
+                WHERE id = %s
+                ''',
+                [location_id]
+            )
+        messages.success(request, 'Location deleted successfully!')
+    else:
+        messages.error(request, 'You are not authorized to delete this location.')
     return redirect('service_locations')
 
 @login_required
@@ -98,11 +102,15 @@ def devices_list(request, location_id):
     return render(request, 'customer/devices_manager/devices_list.html', {'devices': devices, 'location_id': location_id})
 
 def delete_device(request, device_id):
-    device = Devices.objects.get(deviceID=device_id)    
+    device = get_object_or_404(Devices, deviceID=device_id) 
     location_id = device.location_id # type: ignore
-    with connection.cursor() as cursor:
-        cursor.execute('DELETE FROM accounts_devices WHERE "deviceID" = %s', [device_id])
-    messages.success(request, 'Device deleted successfully!')
+    if request.user == device.location.customer: # make sure that the user is the owner of the device
+        with connection.cursor() as cursor:
+            cursor.execute('DELETE FROM accounts_devices WHERE "deviceID" = %s', [device_id])
+        messages.success(request, 'Device deleted successfully!')
+        return redirect('devices_list', location_id=location_id)
+    else:
+        messages.error(request, 'You are not authorized to delete this device.')
     return redirect('devices_list', location_id=location_id)
 
 def pair_device(request, location_id):
