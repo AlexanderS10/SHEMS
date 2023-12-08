@@ -10,6 +10,7 @@ class ServiceLocationForm(forms.ModelForm):
             'unitNumber': forms.NumberInput(attrs={'class': 'form-control'}),
             'streetNumber': forms.NumberInput(attrs={'class': 'form-control'}),
             'streetName': forms.TextInput(attrs={'class': 'form-control'}),
+            'city': forms.TextInput(attrs={'class': 'form-control'}),
             'sstate': forms.TextInput(attrs={'class': 'form-control'}),
             'zipcode': forms.TextInput(attrs={'class': 'form-control'}),
             'serviceStart': forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'placeholder': 'YYYY-MM-DD'}),

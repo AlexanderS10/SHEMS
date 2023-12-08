@@ -13,11 +13,6 @@ Register Device
     <main>
         <div class="centered-list">
             <h2>Pair Device</h2>
-                {% comment %} <form method="post" class="device-creation-form">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" class="btn btn-primary">Add Device</button>
-                </form>  {% endcomment %}
                 <form method="post" class="device-creation-form">
                     {% csrf_token %}
                     <label for="device_name">Device Name:</label>

@@ -3,3 +3,4 @@ SHEMS/.env
 SHEMS/SHEMS/.env
 env
 sent_emails
+node_modules

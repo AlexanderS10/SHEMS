@@ -6,7 +6,7 @@
         <ul class="locations-list">
             {% for location in service_locations %}
                 <li>
-                    {{ location.streetName }}, {{ location.sstate }} {{ location.zipcode }}
+                    {{ location.streetNumber }} {{ location.streetName }}, {{ location.sstate }} {{ location.zipcode }}
                     <a href="{% url 'delete_location' location.id %}" class="btn btn-danger delete-location" onclick="return confirmDelete()">Delete</a>                    
                 </li>
             {% empty %}

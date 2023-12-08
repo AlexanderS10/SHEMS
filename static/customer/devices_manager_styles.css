@@ -38,11 +38,15 @@ li.odd {
     background-color: #dee2e65e;
     /* Change this to your desired background color */
 }
+.locations-list a li{
+    padding-left: 20px;
+}
+
 .locations-list a{
     width: 100%;
     padding: 0;
     margin: 0;
-    text-align: center;
+    text-align: left;
     font-size: x-large;
 }
 li:hover {

@@ -71,3 +71,16 @@ p input{
     width: 100%;
 }
 
+#chart {
+    width: 1000px !important;
+    height: 500px !important;
+}
+
+.chart-container-24 {
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
