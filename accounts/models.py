@@ -46,6 +46,7 @@ class ServiceLocations(models.Model):
     unitNumber = models.SmallIntegerField(validators=[MinValueValidator(0)])
     streetNumber = models.SmallIntegerField(validators=[MinValueValidator(1)])
     streetName = models.CharField(max_length=30)
+    city = models.CharField(max_length=30)
     sstate = models.CharField(max_length=2)
     zipcode = models.CharField(max_length=5)
     serviceStart = models.DateField()
@@ -73,43 +74,38 @@ class DeviceModel(models.Model):
         return self.modelNumber
 
 class Devices(models.Model):
-    deviceID = models.AutoField(primary_key=True)
+    device_id = models.AutoField(primary_key=True)
     location = models.ForeignKey('ServiceLocations', on_delete=models.CASCADE)
-    device_name = models.CharField(max_length=30)
+    device_name = models.CharField(max_length=40, null=False, blank=False)
     device_type = models.ForeignKey(DeviceType, on_delete=models.CASCADE)
     modelNumber = models.ForeignKey(DeviceModel, on_delete=models.CASCADE)
     class Meta:
         constraints = [
-            models.CheckConstraint(check=models.Q(deviceID__isnull=False), name='non_null_deviceID'),
+            models.CheckConstraint(check=models.Q(device_id__isnull=False), name='non_null_device'),
         ]
     def __str__(self):
         return self.device_name
     
 class Events(models.Model):
-    eventID = models.AutoField(primary_key=True)
-    deviceID = models.ForeignKey('Devices', on_delete=models.CASCADE)
-    event_label = models.CharField(max_length=30)
-    datetimestamp = models.DateTimeField()
+    event_id = models.AutoField(primary_key=True)
+    device = models.ForeignKey('Devices', on_delete=models.CASCADE, null=False, blank=False)
+    event_label = models.CharField(max_length=30, null=False, blank=False)
+    datetimestamp = models.DateTimeField(null=False, blank=False)
     event_value = models.DecimalField(max_digits=12, decimal_places=2)
-    class Meta:
-        constraints = [
-            models.CheckConstraint(check=models.Q(eventID__isnull=False), name='non_null_eventID'),
-        ]
 
 class EnergyUsage(models.Model):
-    deviceID = models.ForeignKey('Devices', on_delete=models.CASCADE)
+    device = models.ForeignKey('Devices', on_delete=models.CASCADE)
     Energy = models.DecimalField(max_digits=10, decimal_places=2)
     EnergyTimestamp = models.DateTimeField()
-
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['deviceID', 'EnergyTimestamp'], name='unique_device_energy_timestamp'),
+            models.UniqueConstraint(fields=['device', 'EnergyTimestamp'], name='unique_device_energy_timestamp'),
         ]
 
 class EnergyPrices(models.Model):
     dateTime = models.DateTimeField()
-    zipcode = models.CharField(max_length=5)
-    price = models.DecimalField(max_digits=8, decimal_places=4)
+    zipcode = models.CharField(max_length=5, null=False, blank=False)
+    price = models.DecimalField(max_digits=8, decimal_places=4, null=False, blank=False)
     class Meta:
         constraints = [
             models.CheckConstraint(check=models.Q(price__gte=0), name='positive_price'),
