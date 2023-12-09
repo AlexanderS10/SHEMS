@@ -1,4 +1,22 @@
-console.log("customer_home_script.js loaded");
+const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+
+dropdownToggles.forEach(toggle => {
+    toggle.addEventListener('click', function(event) {
+        event.stopPropagation(); // Prevent the click event from propagating to document
+        const dropdownMenu = this.nextElementSibling;
+        dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+    });
+});
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdownMenus = document.querySelectorAll('.dropdown-menu-home');
+    dropdownMenus.forEach(menu => {
+        if (!menu.contains(event.target)) {
+            menu.style.display = 'none';
+        }
+    });
+});
 let ctx = document.getElementById("chart").getContext("2d");
 
 let myChart;

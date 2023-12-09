@@ -1,56 +1,10 @@
-header {
-    background-color: #333;
-    color: #fff;
-    padding: 10px;
-    align-items: center;
-}
-.header-wrapper{
-    display: flex;
-    justify-content: space-between;
-}
-/* Style for the logo */
-.logo {
-    max-width: 100px; /* Adjust size as needed */
-    height: auto;
-}
 
-/* Style for the list on the right */
-.header-items {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    align-items: center;
-}
-
-.header-items li {
-    margin-right: 20px; /* Adjust spacing as needed */
-}
-
-/* Style for the logout link */
-.logout-link {
-    color: #fff;
-    text-decoration: none;
-}
-
-.main-menu {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    list-style-type: none;
-    padding: 0;
-}
-
-.main-menu li {
-    margin: 20px 0;
-    font-size: 2em;
-}
 .centered-form {
+    margin-top: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-bottom: 150px;
 }
 
 .form-container {
@@ -72,15 +26,45 @@ p input{
 }
 
 #chart {
-    width: 1000px !important;
-    height: 500px !important;
+    width: 100% !important;
+    /* height: 500px !important; */
 }
 
-.chart-container-24 {
-    margin-top: 20px;
+
+.chart-and-description {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     width: 100%;
+    padding-inline: 80px;
+    margin-top: 30px;
+}
+
+.chart-description {
+    flex: 1 1 50%; /* Take up half the width initially */
+    padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+}
+
+.chart-container-24 {
+    flex: 1 1 50%; /* Take up half the width initially */
+    padding: 20px;
+}
+
+
+@media (max-width: 1008px) {
+    .chart-and-description {
+        flex-direction: column;
+    }
+    
+    .chart-description, .chart-container-24 {
+        flex: 1 1 100%; /* Take up full width on smaller screens */
+    }
+}
+
+.fun-paragraph {
+    line-height: 1.6;
+    font-size: 18px;
 }

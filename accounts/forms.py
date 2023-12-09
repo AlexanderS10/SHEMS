@@ -1,5 +1,6 @@
 from django import forms
 from .models import ServiceLocations, Devices
+from django.utils import timezone
 class ServiceLocationForm(forms.ModelForm):
     class Meta:
         model = ServiceLocations
@@ -28,3 +29,15 @@ class DeviceCreationForm(forms.ModelForm):
             'device_type': forms.Select(attrs={'class': 'form-control'}),
             'modelNumber': forms.Select(attrs={'class': 'form-control'}),
         }
+class DateSelectorForm(forms.Form):
+    yesterday_date = (timezone.now() - timezone.timedelta(days=2)).strftime("%Y-%m-%d")  # Get yesterday's date
+    date = forms.DateField(
+        widget=forms.DateInput(attrs={
+            'class': 'form-control',
+            'id': 'calendar-selector',
+            'type': 'date',
+            'placeholder': 'Select a date',
+            'max': yesterday_date,  # Set the min attribute to yesterday's date
+        }),
+        label=False
+    )

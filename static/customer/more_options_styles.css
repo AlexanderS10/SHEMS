@@ -1,0 +1,46 @@
+.more-options-section {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    padding-inline: 80px;
+    padding-inline: 80px;
+    padding-top: 50px;
+    padding-bottom: 70px;
+}
+
+.more-options-section h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.option {
+    padding: 20px;
+    border-radius: 8px;
+    background: linear-gradient(45deg, #FFD700, #FF8C00); 
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out;
+}
+
+.option:hover {
+    transform: scale(1.05);
+}
+
+.option h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.option p {
+    font-size: 14px;
+    line-height: 1.5;
+}
+.options-grid a{
+    color: black;
+}

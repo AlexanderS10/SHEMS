@@ -3,10 +3,19 @@
         <div>
             <h1>SHEMS</h1>
         </div>
-        <ul class="header-items">
-            <li><a href="{% url 'customer_home' %}">Home</a></li>
-            <li><a href="{% url 'change_password'%}">{{ user_info.0 }} {{ user_info.1 }}</a></li>
-            <li><a href="{% url 'logout' %}" class="logout-link">Logout</a></li>
-        </ul>
+        <nav class="header-navigation">
+            <ul class="header-items">
+                <li><a href="{% url 'customer_home' %}">Home</a></li>
+                <li><a href="{% url 'change_password'%}">{{user_info.0 }} {{user_info.1 }}</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle">Add/Delete</a>
+                    <ul class="dropdown-menu-home">
+                        <li><a href="{%url 'service_locations'%}">Locations</a></li>
+                        <li><a href="{%url 'manage_devices'%}">Devices</a></li>
+                    </ul>
+                </li>
+                <li><a href="{% url 'logout' %}" class="logout-link">Logout</a></li>
+            </ul>
+        </nav>
     </div>
 </header>

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static%}
+{%block title%}
+    Usage History
+{%endblock title%}
+{%block css%}
+    <link rel="stylesheet" href="{% static 'customer/chart_styles.css'%}">
+    <link rel="stylesheet" href="{% static 'customer/header_footer_styles.css'%}">
+    <link rel="stylesheet" href="{% static 'customer/more_options_styles.css'%}">
+{%endblock css%}
+
+{%block content%}
+    {% include  'customer/header.html'%}
+    <main class="main-content">
+        <div class="chart-and-description">
+            <div class="chart-description">
+                <h2>Understanding Your Energy Usage</h2>
+                <p class="fun-paragraph">
+                    This chart visualizes energy consumption for a specific location over the past 7 days, offering insights into location-specific energy trends.
+                    By default, it displays energy usage for the selected location but allows exploration of other locations as well.
+                    You can use the input field to adjust the timeframe and explore energy trends over different periods.
+                    This tool will help you understand your energy usage and make informed decisions about your energy consumption.
+                </p>
+            </div>
+            <div class="chart-container-history">
+                <div class="chart-modifiers">
+                    <select id="dataSelector">
+                        {% for location in service_locations %}
+                            <option value="{{ location.id }}">{{ location.streetNumber}} {{location.streetName}}</option>
+                        {% endfor %}
+                    </select>
+                    <div class="chart-input-container"> 
+                        <input type="number" id="numberOfDays" name="numberOfDays" min="3" placeholder="Enter days (min 3)" required>
+                    </div>
+                </div>
+                <canvas id="history-chart" width="1000" height="500"></canvas>
+            </div>
+        </div>
+        {% include  'customer/more_options.html'%}
+    </main>
+    {% include  'customer/footer.html'%}
+{%endblock content%}
+{% block jsfiles%}
+{% comment %} <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script> {% endcomment %}
+<script src="{% static 'js/chart.js'%}"></script>
+<script src="{% static 'customer/js/chart_history_script.js'%}"></script>
+{% endblock jsfiles%}

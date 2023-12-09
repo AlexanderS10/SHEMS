@@ -1,0 +1,54 @@
+select#dataSelector{
+    height: 35px !important;
+}
+.chart-container-history{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.fun-paragraph {
+    line-height: 1.6;
+    font-size: 18px;
+}
+
+.chart-and-description {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    padding-inline: 80px;
+    margin-top: 30px;
+}
+
+.chart-description {
+    flex: 1 1 50%; /* Take up half the width initially */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.chart-container-history, .location-chart {
+    flex: 1 1 50%; /* Take up half the width initially */
+    padding: 20px;
+}
+
+
+@media (max-width: 1008px) {
+    .chart-and-description {
+        flex-direction: column;
+    }
+    
+    .chart-description, .chart-container-history, .location-chart {
+        flex: 1 1 100%; /* Take up full width on smaller screens */
+        width: 100%;
+    }
+}
+.chart-modifiers{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 30px;
+}

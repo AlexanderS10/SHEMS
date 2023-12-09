@@ -49,7 +49,7 @@ li.odd {
     text-align: left;
     font-size: x-large;
 }
-li:hover {
+.even:hover, .odd:hover {
     background-color: #0000008c;
     cursor: pointer;
     color: white;

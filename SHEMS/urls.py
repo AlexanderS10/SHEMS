@@ -39,6 +39,8 @@ urlpatterns = [
     path('devices/<int:location_id>/', devices_list, name='devices_list'),
     path('devices/delete/<int:device_id>/', delete_device, name='delete_device'), 
     path('devices/pair_device/<int:location_id>/', pair_device, name='pair_device'),
+    path('history-energy-usage/', history_energy_usage, name='history-energy-usage'),
+    path('location-energy-usage/', location_energy_usage, name='location-energy-usage'),
     path('api/', include('accounts.api_urls')),
 ]
 

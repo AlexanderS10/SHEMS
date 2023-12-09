@@ -6,11 +6,11 @@ Register Device
 
 {%block css%}
     <link rel="stylesheet" href="{% static 'customer/devices_manager_styles.css'%}">
-    <link rel="stylesheet" href="{% static 'customer/customer_home_style.css'%}">
+    <link rel="stylesheet" href="{% static 'customer/header_footer_styles.css'%}">
 {%endblock css%}
 {%block content%}
     {% include  'customer/header.html'%}
-    <main>
+    <main class="main-content">
         <div class="centered-list">
             <h2>Pair Device</h2>
                 <form method="post" class="device-creation-form">
@@ -48,6 +48,7 @@ Register Device
                 </ul>
         </div>
     </main>
+    {% include  'customer/footer.html'%}
 {%endblock content%}
 {% block jsfiles%}
 <script src="{% static 'customer/js/pair_device.js'%}"></script>

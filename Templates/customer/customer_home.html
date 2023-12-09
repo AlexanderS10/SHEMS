@@ -6,31 +6,42 @@ Home
 
 {%block css%}
     <link rel="stylesheet" href="{% static 'customer/customer_home_style.css'%}">
+    <link rel="stylesheet" href="{% static 'customer/header_footer_styles.css'%}">
+    <link rel="stylesheet" href="{% static 'customer/more_options_styles.css'%}">
 {%endblock css%}
 
 {%block content%}
 {%if user_info%}
     {% include  'customer/header.html'%}
     <main>
-        <div class="chart-container-24">
-            <select id="dataSelector">
-                <option value="devices">Devices</option>
-                <option value="locations">Locations</option>
-            </select>
-            <canvas id="chart" width="1000" height="500"></canvas>
+        <div class="chart-and-description">
+            <div class="chart-description">
+                <h2>Understanding Your Energy Consumption</h2>
+                <p class="fun-paragraph">
+                    Welcome! This interactive chart visualizes the energy consumption for your devices and locations over the last 24 hours.
+                    By default, it shows the total energy used by all your devices in various locations.
+                    The vertical bars represent the amount of energy used (measured in kilowatt-hours, kWh), while the horizontal labels show either the devices or the addresses of your locations.
+                    You can switch between viewing 'Devices' and 'Locations' to see how energy is used across individual devices or specific locations.
+                    This chart helps you compare and understand energy usage patterns, supporting informed decisions for efficient energy management.
+                </p>
+            </div>
+            <div class="chart-container-24">
+                <select id="dataSelector">
+                    <option value="devices">Devices</option>
+                    <option value="locations">Locations</option>
+                </select>
+                <canvas id="chart" width="1000" height="500"></canvas>
+            </div>
         </div>
-        <ul class="main-menu">
-            <li><a href="{%url 'service_locations'%}">Manage Service Locations</a></li>
-            <li><a href="{%url 'manage_devices'%}">Manage Devices</a></li>
-            <li><a href="">See current consumption</a></li>
-        </ul>
+        {% include  'customer/more_options.html'%}
     </main>
 {% else %}
-        <p>No user information available.</p>
+        <p>No user information available. If you see this it means you need to log in first</p>
 {%endif%}
+{% include  'customer/footer.html'%}
 {%endblock content%}
 {% block jsfiles%}
-{% comment %} <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script> {% endcomment %}
-<script src="{% static 'js/chart.js'%}"></script>
-<script src="{% static 'customer/js/customer_home_script.js'%}"></script>
+    <script src="{% static 'js/chart.js'%}"></script>
+    {% comment %} <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script> {% endcomment %}
+    <script src="{% static 'customer/js/customer_home_script.js'%}"></script>
 {% endblock jsfiles%}

@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static%}
+{%block title%}
+    Usage History
+{%endblock title%}
+{%block css%}
+    <link rel="stylesheet" href="{% static 'customer/chart_styles.css'%}">
+    <link rel="stylesheet" href="{% static 'customer/header_footer_styles.css'%}">
+    <link rel="stylesheet" href="{% static 'customer/more_options_styles.css'%}">
+{%endblock css%}
+
+{%block content%}
+    {% include  'customer/header.html'%}
+    <main class="main-content">
+        <div class="chart-and-description">
+            <div class="chart-container-history">
+                <div class="chart-modifiers">
+                    <select id="dataSelector">
+                        {% for location in service_locations %}
+                            <option value="{{ location.id }}">{{ location.streetNumber}} {{location.streetName}}</option>
+                        {% endfor %}
+                    </select>
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    </form>
+                </div>
+                <canvas id="location-chart" width="1000" height="500"></canvas>
+            </div>
+            <div class="chart-description">
+                <h2>Understanding Energy Usage at Your Location</h2>
+                <p class="fun-paragraph">
+                    Explore and understand how energy is used at your chosen location with this interactive chart. 
+                    Select a date and location to visualize total energy consumption across all devices. 
+                    Gain insights into energy usage patterns, helping you make informed decisions to 
+                    manage and optimize your energy consumption effectively.
+                </p>
+            </div>
+        </div>
+        {% include  'customer/more_options.html'%}
+    </main>
+    {% include  'customer/footer.html'%}
+{%endblock content%}
+{% block jsfiles%}
+    {% comment %} <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script> {% endcomment %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const yesterdayDate = "{{ yesterday_date }}";
+            document.getElementById('calendar-selector').value = yesterdayDate;
+        });
+    </script>
+    <script src="{% static 'js/chart.js'%}"></script>
+    <script src="{% static 'customer/js/location_energy_usage_script.js'%}"></script>
+{% endblock jsfiles%}

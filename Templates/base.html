@@ -1,6 +1,7 @@
 {% load static%}
 <html>
   <head>
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>
       {% block title %}
         Base title
@@ -21,6 +22,6 @@
     {% endblock content%}
   </body>
   {% block jsfiles%}
-
+    
   {% endblock jsfiles%}
 </html>

@@ -1,16 +1,18 @@
+from re import A
 from MySQLdb import IntegrityError
 from django.shortcuts import render
 from django.db import connection
 from django.shortcuts import get_object_or_404, redirect
 from .utils import *
 from django.contrib import messages
-from .forms import ServiceLocationForm, DeviceCreationForm
+from .forms import *
 from accounts.models import ServiceLocations, Devices, DeviceType, DeviceModel
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
 
 
 def customer_home_view(request):
@@ -175,3 +177,38 @@ class EnergyUsageDataLocation24(APIView):
         customer_id = request.user.id  # Or retrieve the customer ID from the request
         data = get_energy_usage_location_24(customer_id)
         return Response(data)
+
+class HistoryEnergyUsageAPIView(APIView):
+    def get(self, request, location_id):
+        customer_id = request.user.id  
+        energy_usage_data = get_energy_usage_data(customer_id, location_id)
+        return Response(energy_usage_data)
+    def post(self, request, location_id):
+        customer_id = request.user.id  
+        days = request.data.get('days')
+        if days is not None and int(days) >= 3 and int(days) <= 20:  # Ensure location_id is provided in the POST request
+            energy_usage_data = get_energy_usage_data_custom(customer_id, location_id, days)
+            return Response(energy_usage_data)
+        else:
+            return Response({"error": "Location ID is missing or range too large"}, status=status.HTTP_400_BAD_REQUEST)
+    
+@login_required
+def history_energy_usage(request):
+    service_locations = ServiceLocations.objects.filter(customer=request.user.id)
+    return render(request, 'customer/chart_templates/usage_history.html',{'service_locations':service_locations})
+
+@login_required
+def location_energy_usage(request):
+    form = DateSelectorForm()
+    yesterday_date = (timezone.now() - timezone.timedelta(days=2)).strftime("%Y-%m-%d")
+    print(yesterday_date)
+    service_locations = ServiceLocations.objects.filter(customer=request.user.id)
+    return render(request, 'customer/chart_templates/location_energy_usage.html',{'service_locations':service_locations, 'form':form, 'yesterday_date':yesterday_date})
+
+class DeviceEnergyUsageAPIView(APIView):
+    def post(self, request):
+        customer_id = request.user.id
+        location_id = request.data.get('location_id')
+        date = request.data.get('date')
+        energy_usage_data = device_energy_usage_per_date(customer_id, location_id, date)
+        return Response(energy_usage_data)
