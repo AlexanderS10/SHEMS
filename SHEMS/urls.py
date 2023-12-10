@@ -41,6 +41,7 @@ urlpatterns = [
     path('devices/pair_device/<int:location_id>/', pair_device, name='pair_device'),
     path('history-energy-usage/', history_energy_usage, name='history-energy-usage'),
     path('location-energy-usage/', location_energy_usage, name='location-energy-usage'),
+    path('location-usage_history-comparison/', location_usage_history_comparison, name='location-usage-history-comparison'),
     path('api/', include('accounts.api_urls')),
 ]
 

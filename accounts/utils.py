@@ -102,3 +102,42 @@ def device_energy_usage_per_date(customer_id, location_id, date):
             return results
 
     return []
+
+def get_location_history_comparison(location_id, date):
+    sql_query = """
+    WITH LocationsConsumption AS (
+    SELECT SL.customer_id, SL.id as location_id, SL."squareFootage" as squarefootage,
+	(SL."squareFootage" * 1.05) as footageUpper, (SL."squareFootage" * 0.95) as footageLower, 
+	SUM(E."Energy") as energy_consumption
+    FROM accounts_ServiceLocations AS SL 
+    JOIN accounts_Devices AS D ON (SL.id = D.location_id)
+    JOIN accounts_EnergyUsage AS E ON (E.device_id = D.device_id)
+    WHERE DATE_TRUNC('month', E."EnergyTimestamp") = %s::DATE
+    GROUP BY SL.customer_id, SL.id, SL."squareFootage"
+    ),
+    LocationsRelated AS (
+        SELECT L1.location_id,AVG(L2.energy_consumption) as similarLocationsAvg
+        FROM LocationsConsumption AS L1 
+        JOIN LocationsConsumption AS L2 ON (
+            L1.squareFootage >= L2.footageLower 
+            AND L1.squareFootage <= L2.footageUpper 
+            AND L1.location_id != L2.location_id
+        )
+        GROUP BY L1.location_id
+    )
+    SELECT LR.location_id, 
+    LC.energy_consumption,
+    ROUND(LR.similarLocationsAvg, 2) as similar_avg,
+    ROUND((LC.energy_consumption / LR.similarLocationsAvg) * 100, 2) as energy_as_percentage
+    FROM LocationsRelated AS LR
+    JOIN LocationsConsumption AS LC USING (location_id)
+    WHERE LR.location_id = %s
+    """
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query, [f'{date}',location_id])
+        if cursor.description is not None:
+            columns = [col[0] for col in cursor.description]
+            results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            return results
+
+    return []

@@ -1,6 +1,5 @@
 let myChart;
 function updateChart(locationId, date) {
-    // Function to fetch data from API
     fetchData(locationId, date);
 }
 function fetchData(locationId, date) {
@@ -67,18 +66,21 @@ function createPolarAreaChart(data) {
             datasets: [{
                 label: 'Energy Consumption',
                 data: values,
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)',
-                    // Add more colors if needed for additional data
-                ],
+                backgroundColor: data.map(entry => getRandomColor()),
                 borderWidth: 1
             }]
         },
         options: {
-            // Customize chart options as needed
-            // For example, title, legend, tooltips, etc.
+
         }
     });
+}
+
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
 }

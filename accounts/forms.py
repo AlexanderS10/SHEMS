@@ -1,6 +1,7 @@
 from django import forms
 from .models import ServiceLocations, Devices
 from django.utils import timezone
+from datetime import datetime, timedelta
 class ServiceLocationForm(forms.ModelForm):
     class Meta:
         model = ServiceLocations
@@ -41,3 +42,29 @@ class DateSelectorForm(forms.Form):
         }),
         label=False
     )
+
+class MonthYearForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super(MonthYearForm, self).__init__(*args, **kwargs)
+
+        # Get current month and year
+        today = datetime.now()
+        current_month = today.month
+        current_year = today.year
+
+        # Create a list of tuples for months and years
+        months_years = []
+        for i in range(20):  # Display the last 15 months
+            months_years.append((current_month, current_year))
+            # Move to the previous month
+            current_month -= 1
+            if current_month == 0:
+                current_month = 12
+                current_year -= 1
+        # Generate choices for the select field
+        choices = [(f"{year}-{month:02d}", f"{year} {datetime.strptime(str(month), '%m').strftime('%B')}") for month, year in months_years]        # Add choices to the form field
+        self.fields['month_year'] = forms.ChoiceField(
+            choices=choices,
+            widget=forms.Select(attrs={'class': 'form-control', 'id': 'month-year-selector-id'}),
+            label=False
+        )

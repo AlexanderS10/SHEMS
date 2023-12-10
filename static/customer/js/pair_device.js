@@ -1,4 +1,4 @@
-function filterModels(selectedDeviceType) {
+function filterModels(selectedDeviceType) {//Iterator for the device models
     let deviceModels = document.getElementById('device_model').getElementsByTagName('option');
 
     for (let i = 0; i < deviceModels.length; i++) {

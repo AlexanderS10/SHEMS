@@ -13,7 +13,7 @@ from django.contrib.auth import update_session_auth_hash
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
+from .serializers import *
 
 def customer_home_view(request):
     user_info = request.session.get('user_info')
@@ -96,7 +96,7 @@ def delete_location(request, location_id):
 @login_required
 def manage_devices(request):#This is where we fetch the list of service locations
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM accounts_servicelocations")
+        cursor.execute("SELECT * FROM accounts_servicelocations WHERE customer_id = %s", [request.user.id])
         service_locations = cursor.fetchall()  
     return render(request, 'customer/devices_manager/locations_list.html', {'service_locations': service_locations})
 
@@ -178,7 +178,7 @@ class EnergyUsageDataLocation24(APIView):
         data = get_energy_usage_location_24(customer_id)
         return Response(data)
 
-class HistoryEnergyUsageAPIView(APIView):
+class HistoryEnergyUsageAPIView(APIView):#The API view for the history energy usage on daily basis per device for a location
     def get(self, request, location_id):
         customer_id = request.user.id  
         energy_usage_data = get_energy_usage_data(customer_id, location_id)
@@ -207,8 +207,42 @@ def location_energy_usage(request):
 
 class DeviceEnergyUsageAPIView(APIView):
     def post(self, request):
-        customer_id = request.user.id
-        location_id = request.data.get('location_id')
-        date = request.data.get('date')
-        energy_usage_data = device_energy_usage_per_date(customer_id, location_id, date)
-        return Response(energy_usage_data)
+        serializer = EnergyUsageSerializer(data=request.data)
+        if serializer.is_valid():
+            customer_id = request.user.id
+            validated_data = serializer.validated_data
+            location_id = validated_data.get('location_id') # type: ignore
+            date = validated_data.get('date') # type: ignore
+            print(location_id, date)
+            if location_id is not None and date is not None:
+                energy_usage_data = device_energy_usage_per_date(customer_id, location_id, date)
+                return Response(energy_usage_data)
+            else:
+                # Handle the case where 'location_id' or 'date' is missing
+                return Response({'error': 'Location ID or Date missing'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
+@login_required
+def location_usage_history_comparison(request):
+    form = MonthYearForm()
+    service_locations = ServiceLocations.objects.filter(customer=request.user.id)
+    return render(request, 'customer/chart_templates/location_usage_comparison.html',{'service_locations':service_locations, 'form':form})
+
+class LocationEnergyComparisonAPIView(APIView):
+    def post(self, request):
+        serializer = LocationDateSerializer(data=request.data)
+        if serializer.is_valid():
+            validated_data = serializer.validated_data
+            location_id = validated_data.get('location_id') # type: ignore
+            date = validated_data.get('date') # type: ignore
+            print(location_id, date)
+            if location_id is not None and date is not None:
+                energy_usage_data = get_location_history_comparison(location_id, date)
+                return Response(energy_usage_data)
+            else:
+                # Handle the case where 'location_id' or 'date' is missing
+                return Response({'error': 'Location ID or Date missing'}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
