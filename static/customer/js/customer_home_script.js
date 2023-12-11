@@ -76,7 +76,7 @@ function createOrUpdateChart(data) {
                         display: true,
                         text: 'Energy Use In The Last 24 Hours For ALL Devices or Locations',
                         font: {
-                            size: 30, // Set font size for the chart title
+                            size: 20, // Set font size for the chart title
                         },
                     },
                 },
@@ -85,28 +85,28 @@ function createOrUpdateChart(data) {
                         beginAtZero: true,
                         ticks: {
                             font: {
-                                size: 15, // Set font size for y-axis labels
+                                size: 10, // Set font size for y-axis labels
                             },
                         },
                         title: {
                             display: true,
                             text: 'Energy Consumption in kwh',
                             font: {
-                                size: 20, // Set font size for y-axis title
+                                size: 18, // Set font size for y-axis title
                             },
                         }
                     },
                     x: {
                         ticks: {
                             font: {
-                                size: 20, // Set font size for x-axis labels
+                                size: 10, // Set font size for x-axis labels
                             },
                         },
                         title: {
                             display: true,
                             text: 'Item Name',
                             font: {
-                                size: 25, // Set font size for x-axis title
+                                size: 18, // Set font size for x-axis title
                             },
                         }
                     }

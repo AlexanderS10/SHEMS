@@ -54,11 +54,13 @@ def service_locations(request):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         '''
+                        BEGIN;  -- Start a transaction
                         INSERT INTO public.accounts_servicelocations(customer_id, "unitNumber", "streetNumber", "streetName", "city", "sstate", "zipcode", "serviceStart", "squareFootage", "noBedrooms", "noOccupants")
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+                        COMMIT;  -- Commit the transaction
                         ''',
                         [customer_id, unit_number, street_number, street_name, city, sstate, zipcode, service_start, square_footage, no_bedrooms, no_occupants]
-                    )
+                    ) #Here I made the transaction atomic so that if one of the queries fails, the whole transaction will be rolled back
                 messages.success(request, 'Location added successfully!')
                 return redirect('service_locations')
             except IntegrityError as e:
@@ -74,10 +76,17 @@ def service_locations(request):
 
 @login_required
 def delete_location(request, location_id):
-    location = get_object_or_404(ServiceLocations, id=location_id) # make sure that the location exists
-    if request.user == location.customer: # make sure that the user is the owner of the location
-        try:
-            with connection.cursor() as cursor:
+    location = get_object_or_404(ServiceLocations, id=location_id)
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                '''
+                SELECT * FROM accounts_servicelocations WHERE id = %s FOR UPDATE 
+                ''',
+                [location_id]#Here the row will be locked with an exclusive lock
+            )
+            location_to_delete = cursor.fetchone()
+            if location_to_delete and request.user.id == location_to_delete[11]:  # Assuming user ID is at index 5
                 cursor.execute(
                     '''
                     DELETE FROM accounts_servicelocations
@@ -85,12 +94,13 @@ def delete_location(request, location_id):
                     ''',
                     [location_id]
                 )
-            messages.success(request, 'Location deleted successfully!')
-        except IntegrityError as e:
-            print(e)
-            messages.error(request, 'An error occurred while deleting the location.')
-    else:
-        messages.error(request, 'You are not authorized to delete this location.')
+                messages.success(request, 'Location deleted successfully!')
+            else:
+                messages.error(request, 'You are not authorized to delete this location.')
+
+    except IntegrityError as e:
+        print(e)
+        messages.error(request, 'An error occurred while deleting the location.')
     return redirect('service_locations')
 
 @login_required
@@ -114,20 +124,38 @@ def devices_list(request, location_id):
     return render(request, 'customer/devices_manager/devices_list.html', {'devices': devices, 'location_id': location_id})
 
 def delete_device(request, device_id):
-    device = get_object_or_404(Devices, device_id=device_id) 
+    global_location = None
     try:
-        location_id = device.location_id # type: ignore
-        if request.user == device.location.customer: # make sure that the user is the owner of the device
-            with connection.cursor() as cursor:
-                cursor.execute('DELETE FROM accounts_devices WHERE "device_id" = %s', [device_id])
-            messages.success(request, 'Device deleted successfully!')
-            return redirect('devices_list', location_id=location_id)
-        else:
-            messages.error(request, 'You are not authorized to delete this device.')
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT * FROM accounts_devices WHERE device_id = %s FOR UPDATE', [device_id])#Here the row will be locked an exclusive lock
+            device_to_delete = cursor.fetchone()
+            if device_to_delete:
+                print(device_to_delete)
+                location_id = device_to_delete[3]
+                global_location = location_id
+                cursor.execute('SELECT customer_id FROM accounts_servicelocations WHERE id = %s', [location_id])
+                user = cursor.fetchone()[0] if cursor.rowcount > 0 else None
+                print(user)
+                if request.user.id != user:
+                    messages.error(request, 'You are not authorized to delete this device.')
+                    return redirect('devices_list', location_id=location_id)
+
+                cursor.execute('DELETE FROM accounts_devices WHERE device_id = %s', [device_id])
+                messages.success(request, 'Device deleted successfully!')
+                return redirect('devices_list', location_id=location_id)
+            else:
+                messages.error(request, 'Device not found.')
+                return redirect('manage_devices')
+
+    except IntegrityError:
+        messages.error(request, 'Another user modified this device. Please refresh and try again.')
         return redirect('devices_list', location_id=location_id)
-    except AttributeError:
-        messages.error(request, 'There was an error deleting the device.')
-        return redirect('service_locations')
+    except Exception as e:
+        if global_location:
+            messages.error(request, f'There was an error deleting the device: {e}')
+            return redirect('devices_list', location_id=global_location)
+        else:
+            return redirect('manage_devices')
 
 def pair_device(request, location_id):
     device_types = DeviceType.objects.all()
@@ -143,8 +171,10 @@ def pair_device(request, location_id):
                 with connection.cursor() as cursor:
                     cursor.execute(
                         '''
+                        BEGIN;
                         INSERT INTO accounts_devices ("location_id", "device_name", "device_type_id", "modelNumber_id")
                         VALUES (%s, %s, %s, %s);
+                        COMMIT;
                         ''',
                         [location_id, device_name, device_type_id, model_number_id]
                     )
