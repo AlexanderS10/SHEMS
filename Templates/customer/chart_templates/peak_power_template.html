@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+   Peak Power Usage
+{% endblock title %}
+{% block css %}
+   <link rel="stylesheet" href="{% static 'customer/chart_styles.css' %}">
+   <link rel="stylesheet" href="{% static 'customer/header_footer_styles.css' %}">
+   <link rel="stylesheet" href="{% static 'customer/more_options_styles.css' %}">
+{% endblock css %}
+
+
+{% block content %}
+   {% include 'customer/header.html' %}
+   <main class="main-content">
+       <div class="chart-and-description">
+           <div class="chart-description">
+               <h2>Peak Power Usage at Your Locations</h2>
+               <p class="fun-paragraph">
+                   Explore the peak power usage
+                   For each of your locations for all the years with data available see at what was the highest amount of energy consumed.
+               </p>
+           </div>
+           <div class="chart-container-history">
+            <table class="data-table">
+                {% for data in peak_power_data %}
+                <tr>
+                    <td class="table-lable">Street Name:</td>
+                    <td class="table-data">{{ data.streetName }}</td>
+                </tr>
+                <tr>
+                    <td class="table-lable">Year:</td>
+                    <td class="table-data">{{ data.year }}</td>
+                </tr>
+                <tr>
+                    <td class="table-lable">Peak Power in Kw:</td>
+                    <td class="table-data">{{ data.peak_power }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">No peak power data available.</td>
+                </tr>
+                {% endfor %}
+            </table>
+           </div>
+       </div>
+       {% include 'customer/more_options.html' %}
+   </main>
+   {% include 'customer/footer.html' %}
+{% endblock content %}
+

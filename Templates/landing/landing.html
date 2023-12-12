@@ -6,6 +6,7 @@
 
 {%block css%}
     <link rel="stylesheet" href="{% static 'landing.css' %}">
+    <link rel="stylesheet" href="{% static 'customer/header_footer_styles.css'%}">
 {%endblock css%}
 
 {%block content%}
@@ -55,6 +56,7 @@
     </main>
   </div>
   <div>
+  {% include  'customer/footer.html'%}
 {%endblock content%}
 
 {%block jsfiles %}

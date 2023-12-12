@@ -38,10 +38,12 @@ urlpatterns = [
     path('manage_devices/', manage_devices, name='manage_devices'),
     path('devices/<int:location_id>/', devices_list, name='devices_list'),
     path('devices/delete/<int:device_id>/', delete_device, name='delete_device'), 
+    path('devices/activate/<int:device_id>/', activate_device, name='activate_device'), 
     path('devices/pair_device/<int:location_id>/', pair_device, name='pair_device'),
     path('history-energy-usage/', history_energy_usage, name='history-energy-usage'),
     path('location-energy-usage/', location_energy_usage, name='location-energy-usage'),
     path('location-usage_history-comparison/', location_usage_history_comparison, name='location-usage-history-comparison'),
+    path('peak-power/', peak_power_view, name='peak-power'),
     path('api/', include('accounts.api_urls')),
 ]
 

@@ -30,8 +30,13 @@ Device List
                 <ul class="device-list">
                     {% for device in devices %}
                         <li>
-                            <div>{{ device.1 }}, {{ device.2 }}, {{ device.3 }}</div>
-                            <a href="{% url 'delete_device' device.0 %}" class="btn btn-danger" onclick="return confirmDelete()">Delete</a>
+                            <div class="device-details">{{ device.1 }}, {{ device.2 }}, {{ device.3 }}</div>
+                            {% if device.4 %}
+                                <a href="{% url 'delete_device' device.0 %}" class="btn btn-danger" onclick="return confirmDelete()">Deactivate</a>
+                            {% else %}
+                                <a href="{% url 'activate_device' device.0 %}" class="btn btn-success" onclick="return confirmActivate()">Activate</a>
+                            {% endif %}
+                            {% comment %} <a href="{% url 'delete_device' device.0 %}" class="btn btn-danger" onclick="return confirmDelete()">Deactivate</a> {% endcomment %}
                         </li>
                     {% empty %}
                         <li>No devices available.</li>

@@ -29,5 +29,9 @@ window.onload = function() {
 };
 
 function confirmDelete() {
-    return confirm('Are you sure you want to delete this device? All associated data will be removed.');
+    return confirm('Are you sure you want to deactivate this device?');
+}
+
+function confirmActivate(){
+    return confirm('Are you sure you want to activate this device?');
 }

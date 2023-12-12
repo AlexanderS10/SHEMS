@@ -79,6 +79,7 @@ class Devices(models.Model):
     device_name = models.CharField(max_length=40, null=False, blank=False)
     device_type = models.ForeignKey(DeviceType, on_delete=models.CASCADE)
     modelNumber = models.ForeignKey(DeviceModel, on_delete=models.CASCADE)
+    is_active = models.BooleanField(default=True)
     class Meta:
         constraints = [
             models.CheckConstraint(check=models.Q(device_id__isnull=False), name='non_null_device'),

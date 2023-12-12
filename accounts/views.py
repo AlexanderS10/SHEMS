@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
 
+@login_required
 def customer_home_view(request):
     user_info = request.session.get('user_info')
     return render(request, "customer/customer_home.html", {'user_info':user_info})
@@ -68,7 +69,8 @@ def service_locations(request):
                 messages.error(request, 'An error occurred while adding the location.')
     else:
         form = ServiceLocationForm()
-    service_locations = ServiceLocations.objects.filter(customer=request.user.id)
+    #service_locations = ServiceLocations.objects.filter(customer=request.user.id)
+    service_locations = get_service_locations(request.user.id)
     return render(request, 'customer/service_locations.html', {
         'service_locations': service_locations,
         'form': form,
@@ -112,7 +114,7 @@ def manage_devices(request):#This is where we fetch the list of service location
 
 def devices_list(request, location_id):
     query = """
-    SELECT d."device_id", d.device_name, dt.name, dm."modelNumber"
+    SELECT d."device_id", d.device_name, dt.name, dm."modelNumber", d.is_active
     FROM accounts_devices AS d
     JOIN accounts_devicetype AS dt ON d.device_type_id = dt.id
     JOIN accounts_devicemodel AS dm ON d."modelNumber_id"=dm.id
@@ -123,7 +125,7 @@ def devices_list(request, location_id):
         devices = cursor.fetchall()  
     return render(request, 'customer/devices_manager/devices_list.html', {'devices': devices, 'location_id': location_id})
 
-def delete_device(request, device_id):
+def delete_device(request, device_id):#Instead of delete what is needed is to set it to inactive
     global_location = None
     try:
         with connection.cursor() as cursor:
@@ -133,14 +135,13 @@ def delete_device(request, device_id):
                 print(device_to_delete)
                 location_id = device_to_delete[3]
                 global_location = location_id
-                cursor.execute('SELECT customer_id FROM accounts_servicelocations WHERE id = %s', [location_id])
+                cursor.execute('SELECT customer_id FROM accounts_servicelocations WHERE id = %s', [location_id]) #Slect the user to check if the user owns the device
                 user = cursor.fetchone()[0] if cursor.rowcount > 0 else None
                 print(user)
                 if request.user.id != user:
                     messages.error(request, 'You are not authorized to delete this device.')
                     return redirect('devices_list', location_id=location_id)
-
-                cursor.execute('DELETE FROM accounts_devices WHERE device_id = %s', [device_id])
+                cursor.execute('UPDATE accounts_devices SET is_active = FALSE WHERE device_id = %s', [device_id])
                 messages.success(request, 'Device deleted successfully!')
                 return redirect('devices_list', location_id=location_id)
             else:
@@ -157,6 +158,39 @@ def delete_device(request, device_id):
         else:
             return redirect('manage_devices')
 
+def activate_device(request, device_id):
+    global_location = None
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT * FROM accounts_devices WHERE device_id = %s FOR UPDATE', [device_id])#Here the row will be locked an exclusive lock
+            device_to_delete = cursor.fetchone()
+            if device_to_delete:
+                location_id = device_to_delete[3]
+                global_location = location_id
+                cursor.execute('SELECT customer_id FROM accounts_servicelocations WHERE id = %s', [location_id]) #Slect the user to check if the user owns the device
+                user = cursor.fetchone()[0] if cursor.rowcount > 0 else None
+                print(user)
+                if request.user.id != user:
+                    messages.error(request, 'You are not authorized to activate this device.')
+                    return redirect('devices_list', location_id=location_id)
+                cursor.execute('UPDATE accounts_devices SET is_active = TRUE WHERE device_id = %s', [device_id])
+                messages.success(request, 'Device activated successfully!')
+                return redirect('devices_list', location_id=location_id)
+            else:
+                messages.error(request, 'Device not found.')
+                return redirect('manage_devices')
+
+    except IntegrityError:
+        messages.error(request, 'Another user modified this device. Please refresh and try again.')
+        return redirect('devices_list', location_id=location_id)
+    except Exception as e:
+        if global_location:
+            messages.error(request, f'There was an error activating the device: {e}')
+            return redirect('devices_list', location_id=global_location)
+        else:
+            return redirect('manage_devices')
+
+
 def pair_device(request, location_id):
     device_types = DeviceType.objects.all()
     device_models = DeviceModel.objects.all()
@@ -172,8 +206,8 @@ def pair_device(request, location_id):
                     cursor.execute(
                         '''
                         BEGIN;
-                        INSERT INTO accounts_devices ("location_id", "device_name", "device_type_id", "modelNumber_id")
-                        VALUES (%s, %s, %s, %s);
+                        INSERT INTO accounts_devices ("location_id", "device_name", "device_type_id", "modelNumber_id", "is_active")
+                        VALUES (%s, %s, %s, %s, TRUE);
                         COMMIT;
                         ''',
                         [location_id, device_name, device_type_id, model_number_id]
@@ -224,7 +258,8 @@ class HistoryEnergyUsageAPIView(APIView):#The API view for the history energy us
     
 @login_required
 def history_energy_usage(request):
-    service_locations = ServiceLocations.objects.filter(customer=request.user.id)
+    #service_locations = ServiceLocations.objects.filter(customer=request.user.id)
+    service_locations = get_service_locations(request.user.id)
     return render(request, 'customer/chart_templates/usage_history.html',{'service_locations':service_locations})
 
 @login_required
@@ -232,7 +267,8 @@ def location_energy_usage(request):
     form = DateSelectorForm()
     yesterday_date = (timezone.now() - timezone.timedelta(days=2)).strftime("%Y-%m-%d")
     print(yesterday_date)
-    service_locations = ServiceLocations.objects.filter(customer=request.user.id)
+    service_locations = get_service_locations(request.user.id)
+    #service_locations = ServiceLocations.objects.filter(customer=request.user.id)
     return render(request, 'customer/chart_templates/location_energy_usage.html',{'service_locations':service_locations, 'form':form, 'yesterday_date':yesterday_date})
 
 class DeviceEnergyUsageAPIView(APIView):
@@ -257,7 +293,8 @@ class DeviceEnergyUsageAPIView(APIView):
 @login_required
 def location_usage_history_comparison(request):
     form = MonthYearForm()
-    service_locations = ServiceLocations.objects.filter(customer=request.user.id)
+    service_locations = get_service_locations(request.user.id)
+    #service_locations = ServiceLocations.objects.filter(customer=request.user.id)
     return render(request, 'customer/chart_templates/location_usage_comparison.html',{'service_locations':service_locations, 'form':form})
 
 class LocationEnergyComparisonAPIView(APIView):
@@ -276,3 +313,17 @@ class LocationEnergyComparisonAPIView(APIView):
                 return Response({'error': 'Location ID or Date missing'}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@login_required
+def peak_power_view(request):
+   customer_id = request.user.id
+   peak_power_data = get_peak_power_data(customer_id)
+   print(peak_power_data)
+   return render(request, 'customer/chart_templates/peak_power_template.html', {'peak_power_data': peak_power_data})
+
+class PeakPowerAPIView(APIView):
+   def get(self, request):
+       customer_id = request.user.id 
+       peak_power_data = get_peak_power_data(customer_id)
+       print(peak_power_data)
+       return Response(peak_power_data)

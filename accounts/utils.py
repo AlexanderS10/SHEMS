@@ -1,4 +1,15 @@
 from django.db import connection
+def get_service_locations(customer_id):
+    with connection.cursor() as cursor:
+        cursor.execute('''
+            SELECT * 
+            FROM accounts_servicelocations
+            WHERE customer_id = %s
+        ''', [customer_id])
+        columns = [col[0] for col in cursor.description]
+        rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        return rows
+
 def get_energy_usage_device_24(customer_id):
     with connection.cursor() as cursor:
         query = """
@@ -6,7 +17,7 @@ def get_energy_usage_device_24(customer_id):
         FROM accounts_servicelocations AS SL
         JOIN accounts_devices AS D ON (SL.id = D.location_id)
         JOIN accounts_energyusage AS E ON (E.device_id = D.device_id)
-        WHERE SL.customer_id = %s AND E."EnergyTimestamp" >= NOW() - Interval '24 hours'
+        WHERE SL.customer_id = %s AND E."EnergyTimestamp" >= NOW() - Interval '24 hours' AND D.is_active = TRUE
         GROUP BY D.device_id, D.device_name
         """
         cursor.execute(query, [customer_id])
@@ -25,7 +36,7 @@ def get_energy_usage_location_24(customer_id):
             JOIN accounts_servicelocations AS l ON (c.id = l.customer_id)
             JOIN accounts_devices AS d ON (l.id = d.location_id)
             JOIN accounts_energyusage AS e ON (d.device_id = e.device_id)
-            WHERE l.customer_id = %s AND e."EnergyTimestamp" >= NOW() - Interval '24 hours'
+            WHERE l.customer_id = %s AND e."EnergyTimestamp" >= NOW() - Interval '24 hours' AND d.is_active = TRUE
             GROUP BY l.id, l."streetName"
         ''', [customer_id])
         if cursor.description is not None:
@@ -141,3 +152,35 @@ def get_location_history_comparison(location_id, date):
             return results
 
     return []
+
+
+
+
+def get_peak_power_data(customer_id):
+   with connection.cursor() as cursor:
+       query = """
+       WITH SummedEnergy AS (
+    SELECT D.location_id, EU."EnergyTimestamp" as energytimestamp, SUM(EU."Energy") AS summed_energy
+    FROM accounts_devices AS D
+    JOIN accounts_energyusage AS EU ON D.device_id = EU.device_id
+    GROUP BY D.location_id, EU."EnergyTimestamp"
+    ),
+    MaxEnergyPerYear AS (
+        SELECT location_id, EXTRACT(YEAR FROM EnergyTimestamp) AS year, MAX(summed_energy) AS max_summed_energy
+        FROM SummedEnergy
+        GROUP BY location_id, EXTRACT(YEAR FROM EnergyTimestamp)
+    )
+    SELECT distinct on (sl.id, m.year) SL.id AS location_id, SL."streetName",M.year, M.max_summed_energy * 6 AS peak_power
+    FROM accounts_servicelocations AS SL
+    JOIN MaxEnergyPerYear AS M ON SL.id = M.location_id
+    JOIN SummedEnergy AS SE ON SL.id = SE.location_id AND M.max_summed_energy = SE.summed_energy
+    WHERE SL.customer_id = %s
+    GROUP BY SL.id, SL."streetName", M.year, M.max_summed_energy, SE.EnergyTimestamp
+       """
+       cursor.execute(query, [customer_id])
+       if cursor.description:
+           columns = [col[0] for col in cursor.description]
+           data = [dict(zip(columns, row)) for row in cursor.fetchall()]
+           return data
+       else:
+           return []

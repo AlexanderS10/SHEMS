@@ -3,6 +3,7 @@
     flex-direction: column;
     align-items: center;
     margin-top: 15px;
+    margin-bottom: 15px;
 }
 .list-container {
     width: 50%;
@@ -20,6 +21,15 @@ li {
 .locations-list a {
     text-decoration: none;
     color: #000; /* Adjust link color */
+}
+ul.device-list li{
+    padding-inline: 30px;
+}
+a.btn.btn-success{
+    width: 103px;
+}
+.device-details{
+    padding-right: 15px;
 }
 .locations-list {
     font-size: x-large;
