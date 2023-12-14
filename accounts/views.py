@@ -88,7 +88,7 @@ def delete_location(request, location_id):
                 [location_id]#Here the row will be locked with an exclusive lock
             )
             location_to_delete = cursor.fetchone()
-            if location_to_delete and request.user.id == location_to_delete[11]:  # Assuming user ID is at index 5
+            if location_to_delete and request.user.id == location_to_delete[11]:  
                 cursor.execute(
                     '''
                     DELETE FROM accounts_servicelocations
@@ -129,20 +129,20 @@ def delete_device(request, device_id):#Instead of delete what is needed is to se
     global_location = None
     try:
         with connection.cursor() as cursor:
-            cursor.execute('SELECT * FROM accounts_devices WHERE device_id = %s FOR UPDATE', [device_id])#Here the row will be locked an exclusive lock
+            cursor.execute('SELECT * FROM accounts_devices WHERE device_id = %s FOR UPDATE', [device_id])#Here the row will be locked an exclusive lock at the row level 
             device_to_delete = cursor.fetchone()
             if device_to_delete:
                 print(device_to_delete)
                 location_id = device_to_delete[3]
                 global_location = location_id
                 cursor.execute('SELECT customer_id FROM accounts_servicelocations WHERE id = %s', [location_id]) #Slect the user to check if the user owns the device
-                user = cursor.fetchone()[0] if cursor.rowcount > 0 else None
+                user = cursor.fetchone()[0] if cursor.rowcount > 0 else None #type: ignore
                 print(user)
                 if request.user.id != user:
                     messages.error(request, 'You are not authorized to delete this device.')
                     return redirect('devices_list', location_id=location_id)
                 cursor.execute('UPDATE accounts_devices SET is_active = FALSE WHERE device_id = %s', [device_id])
-                messages.success(request, 'Device deleted successfully!')
+                messages.success(request, 'Device deactivated successfully!')
                 return redirect('devices_list', location_id=location_id)
             else:
                 messages.error(request, 'Device not found.')
@@ -150,7 +150,7 @@ def delete_device(request, device_id):#Instead of delete what is needed is to se
 
     except IntegrityError:
         messages.error(request, 'Another user modified this device. Please refresh and try again.')
-        return redirect('devices_list', location_id=location_id)
+        return redirect('devices_list', location_id=location_id)#type: ignore
     except Exception as e:
         if global_location:
             messages.error(request, f'There was an error deleting the device: {e}')
@@ -168,7 +168,7 @@ def activate_device(request, device_id):
                 location_id = device_to_delete[3]
                 global_location = location_id
                 cursor.execute('SELECT customer_id FROM accounts_servicelocations WHERE id = %s', [location_id]) #Slect the user to check if the user owns the device
-                user = cursor.fetchone()[0] if cursor.rowcount > 0 else None
+                user = cursor.fetchone()[0] if cursor.rowcount > 0 else None #type: ignore
                 print(user)
                 if request.user.id != user:
                     messages.error(request, 'You are not authorized to activate this device.')
@@ -182,7 +182,7 @@ def activate_device(request, device_id):
 
     except IntegrityError:
         messages.error(request, 'Another user modified this device. Please refresh and try again.')
-        return redirect('devices_list', location_id=location_id)
+        return redirect('devices_list', location_id=location_id) #type: ignore
     except Exception as e:
         if global_location:
             messages.error(request, f'There was an error activating the device: {e}')

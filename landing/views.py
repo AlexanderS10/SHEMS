@@ -1,10 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.views import View
-from django.db import connection
+from django.db import connection, transaction
 from django.shortcuts import redirect
 from .forms import RegistrationForm 
-from accounts.models import Customers
 from django.contrib import messages
 # Create your views here.
 def landing_view(request):
@@ -61,9 +60,21 @@ class RegisterView(View):
             billing_city = form.cleaned_data['billing_city']
             billing_state = form.cleaned_data['billing_state']
             billing_zipcode = form.cleaned_data['billing_zipcode']
-            Customers.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name, billing_unit_number=billing_unit_number, billing_street_number=billing_street_number, billing_street_name=billing_street_name, billing_city=billing_city, billing_state=billing_state, billing_zipcode=billing_zipcode) # type: ignore
-            messages.success(request, "You have successfully registered! Please log in.")  
-            return redirect('login')  # Redirect to login page after successful registration
+            with transaction.atomic():
+                try:
+                    with connection.cursor() as cursor:
+                        cursor.execute(
+                            '''
+                            INSERT INTO accounts_customers (email, password, first_name, last_name, billing_unit_number, billing_street_number, billing_street_name, billing_city, billing_state, billing_zipcode, is_active)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, TRUE);
+                            ''',
+                            [email, password, first_name, last_name, billing_unit_number, billing_street_number, billing_street_name, billing_city, billing_state, billing_zipcode]
+                        )
+                    messages.success(request, "You have successfully registered! Please log in.")
+                    return redirect('login')  # Redirect to login page after successful registration
+                except Exception as e:
+                    messages.error(request, f"An error occurred during registration: {e}")
+                    return render(request, 'landing/signup.html', {'form': form})
         return render(request, 'landing/signup.html', {'form': form})
 
 

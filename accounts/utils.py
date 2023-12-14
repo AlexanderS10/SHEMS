@@ -6,9 +6,12 @@ def get_service_locations(customer_id):
             FROM accounts_servicelocations
             WHERE customer_id = %s
         ''', [customer_id])
-        columns = [col[0] for col in cursor.description]
-        rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
-        return rows
+        if cursor.description is not None:    
+            columns = [col[0] for col in cursor.description]
+            rows = [dict(zip(columns, row)) for row in cursor.fetchall()]
+            return rows
+        else:
+            return []
 
 def get_energy_usage_device_24(customer_id):
     with connection.cursor() as cursor:
